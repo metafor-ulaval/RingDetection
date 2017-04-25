@@ -15,12 +15,26 @@ ring_detection_UI = function(radius, density)
 
     shiny::fluidRow(
       shiny::column(3,
-        shiny::sliderInput("filter_with", "Filter with:", min = 1,   max = 20,   value = 5,   step = 1),
+        shiny::h4("Smooth density"),
+        shiny::selectInput("smooth", "Method", c("Linear (stat::filter)" = "linear",
+                                                 "Spline (stat::smooth.spline)" = "spline")),
+
+        shiny::conditionalPanel(
+          condition = "input.smooth == 'linear'",
+          shiny::sliderInput("filter_width_linear", "Filter with:", min = 1,   max = 20,   value = 5, step = 1)
+        ),
+        shiny::conditionalPanel(
+          condition = "input.smooth == 'spline'",
+          shiny::sliderInput("filter_width_spline", "Soothing degree:", min = 0,   max = 0.5,   value = 0.06, step = 0.005)
+        )
+      ),
+      shiny::column(3,
+        shiny::h4("Rings Detection"),
         shiny::sliderInput("low_limit", "Lower limit",    min = 300, max = 1000, value = 600, step = 1),
         shiny::sliderInput("up_limit", "Upper limit:",    min = 300, max = 1000, value = 800, step = 1),
         shiny::sliderInput("threshold", "Threshold:",     min = 0,   max = 1000, value = 200, step = 1)
       ),
-      shiny::column(4,
+      shiny::column(3,
         shiny::h4("Plot options"),
         shiny::checkboxInput("smdensity", "Smoothed density", TRUE),
         shiny::checkboxInput("ringlimit", "Ring limits", TRUE),
@@ -28,7 +42,9 @@ ring_detection_UI = function(radius, density)
         shiny::checkboxInput("limits", "Up and low limits", FALSE),
         shiny::checkboxInput("derivative", "Density derivative", FALSE),
         shiny::sliderInput("zoom", label = "Zoom", min = start, max = end, value = c(start, end)),
-        shiny::hr(),
+        shiny::hr()
+      ),
+      shiny::column(3,
         shiny::h4("Export results"),
         shiny::actionButton("quit", "Export results")
       )
@@ -38,19 +54,26 @@ ring_detection_UI = function(radius, density)
   server = shiny::shinyServer(function(input, output) {
 
     output$plot <- shiny::renderPlot({
-      fw = input$filter_with
-      ll = input$low_limit
-      ul = input$up_limit
-      th = input$threshold
-      sm = input$smdensity
-      rl = input$ringlimit
-      ew = input$earlywood
-      li = input$limits
-      de = input$derivative
-      xlim = input$zoom
+      sth = input$smooth
+      fwl = input$filter_width_linear
+      fws = input$filter_width_spline
+      ll  = input$low_limit
+      ul  = input$up_limit
+      thd = input$threshold
+      smd = input$smdensity
+      rgl = input$ringlimit
+      ew  = input$earlywood
+      lim = input$limits
+      der = input$derivative
+      zoo = input$zoom
 
-      data = ring_detection(radius, density, fw, ll, ul, th)
-      plotDensity(data, sm, rl, ew, de, li, xlim = xlim)
+      if(sth == "linear")
+        fw = fwl
+      else if ( sth == "spline")
+        fw = fws
+
+      data = ring_detection(radius, density, sth, fw, ll, ul, thd)
+      plotDensity(data, smd, rgl, ew, der, lim, xlim = zoo)
     })
 
     shiny::observe({

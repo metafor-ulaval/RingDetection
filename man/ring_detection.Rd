@@ -5,7 +5,8 @@
 \alias{ring_detection_UI}
 \title{Algorithm for ring detection}
 \usage{
-ring_detection(radius, density, filter_with, low_limit, up_limit, threshold)
+ring_detection(radius, density, smooth_method, filter_with, low_limit, up_limit,
+  threshold)
 
 ring_detection_UI(radius, density)
 }
