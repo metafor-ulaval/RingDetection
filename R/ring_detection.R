@@ -4,6 +4,7 @@
 #'
 #' @param radius numeric. Position from the pith
 #' @param density numeric. Density for each position
+#' @param smooth_method character. Name of a method for smoothing. Can be 'linear' or 'spline'
 #' @param filter_with scalar. Smoothing parameter for the density profile
 #' @param low_limit scalar.
 #' @param up_limit scalar.
@@ -22,10 +23,11 @@
 #' }
 ring_detection <- function(radius, density, smooth_method, filter_with, low_limit, up_limit, threshold)
 {
-  if (missing(filter_with))  filter_with = 5
-  if (missing(low_limit))    low_limit   = 400
-  if (missing(up_limit))     up_limit    = 800
-  if (missing(threshold))    threshold   = 200
+  if (missing(smooth_method)) smooth_method = 'linear'
+  if (missing(filter_with))   filter_with   = 5
+  if (missing(low_limit))     low_limit     = 400
+  if (missing(up_limit))      up_limit      = 800
+  if (missing(threshold))     threshold     = 200
 
   scDensity = scaleDensity(density)
   smDensity = smoothDensity(smooth_method, scDensity, filter_with)

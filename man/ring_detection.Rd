@@ -15,6 +15,8 @@ ring_detection_UI(radius, density)
 
 \item{density}{numeric. Density for each position}
 
+\item{smooth_method}{character. Name of a method for smoothing. Can be 'linear' or 'spline'}
+
 \item{filter_with}{scalar. Smoothing parameter for the density profile}
 
 \item{low_limit}{scalar.}
