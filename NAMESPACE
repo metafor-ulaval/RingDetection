@@ -2,3 +2,4 @@
 
 export(ring_detection)
 export(ring_detection_UI)
+importFrom(graphics,par)
