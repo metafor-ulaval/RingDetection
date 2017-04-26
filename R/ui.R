@@ -17,15 +17,20 @@ ring_detection_UI = function(radius, density)
       shiny::column(3,
         shiny::h4("Smooth density"),
         shiny::selectInput("smooth", "Method", c("Linear (stat::filter)" = "linear",
-                                                 "Spline (stat::smooth.spline)" = "spline")),
+                                                 "Spline (stat::smooth.spline)" = "spline",
+                                                 "Loess (stat::loess)" = "loess")),
 
         shiny::conditionalPanel(
           condition = "input.smooth == 'linear'",
-          shiny::sliderInput("filter_width_linear", "Filter with:", min = 1,   max = 20,   value = 5, step = 1)
+          shiny::sliderInput("fw_linear", "Filter with:", min = 1,   max = 20,   value = 5, step = 1)
         ),
         shiny::conditionalPanel(
           condition = "input.smooth == 'spline'",
-          shiny::sliderInput("filter_width_spline", "Soothing degree:", min = 0,   max = 0.5,   value = 0.06, step = 0.005)
+          shiny::sliderInput("fw_spline", "Soothing degree:", min = 0,   max = 0.5,   value = 0.06, step = 0.0025)
+        ),
+        shiny::conditionalPanel(
+          condition = "input.smooth == 'loess'",
+          shiny::sliderInput("fw_loess", "Soothing degree:", min = 0.01,   max = 0.05,   value = 0.02, step = 0.001)
         )
       ),
       shiny::column(3,
@@ -55,8 +60,9 @@ ring_detection_UI = function(radius, density)
 
     output$plot <- shiny::renderPlot({
       sth = input$smooth
-      fwl = input$filter_width_linear
-      fws = input$filter_width_spline
+      fwl = input$fw_linear
+      fws = input$fw_spline
+      fwo = input$fw_loess
       ll  = input$low_limit
       ul  = input$up_limit
       thd = input$threshold
@@ -69,8 +75,10 @@ ring_detection_UI = function(radius, density)
 
       if(sth == "linear")
         fw = fwl
-      else if ( sth == "spline")
+      else if (sth == "spline")
         fw = fws
+      else if (sth == "loess")
+        fw = fwo
 
       data = ring_detection(radius, density, sth, fw, ll, ul, thd)
       plotDensity(data, smd, rgl, ew, der, lim, xlim = zoo)

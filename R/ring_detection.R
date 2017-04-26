@@ -29,10 +29,10 @@ ring_detection <- function(radius, density, smooth_method, filter_with, low_limi
   if (missing(up_limit))      up_limit      = 800
   if (missing(threshold))     threshold     = 200
 
-  scDensity = scaleDensity(density)
-  smDensity = smoothDensity(smooth_method, scDensity, filter_with)
+  scaled_density   = scaleDensity(density)
+  smoothed_density = smoothDensity(smooth_method, radius, scaled_density, filter_with)
 
-  ix = core_detection(radius, smDensity, low_limit, up_limit, threshold)
+  ix = core_detection(radius, smoothed_density, low_limit, up_limit, threshold)
 
   year = numeric(length(radius))
   year[ix] = 1
@@ -42,8 +42,8 @@ ring_detection <- function(radius, density, smooth_method, filter_with, low_limi
   data = data.frame(radius)
   data$density   = density
   data$year      = year
-  data$smDensity = smoothDensity(smooth_method, density, n = filter_with)
-  data$woodtype  = identifyWoodtype( smDensity, year )
+  data$smDensity = smoothDensity(smooth_method, radius, density, n = filter_with)
+  data$woodtype  = identifyWoodtype(smoothed_density, year)
 
   attr(data, "fw") = filter_with
   attr(data, "ul") = up_limit
@@ -63,22 +63,6 @@ scaleDensity <- function(density)
   scaled <- (density - offset) * scale
 
   return(scaled)
-}
-
-smoothDensity <- function(method, density, n)
-{
-  if (method == "linear")
-  {
-    maf <- rep(1, n)/n
-    smoothed <- stats::filter(density, maf)
-    return(smoothed)
-  }
-  else if (method == "spline")
-  {
-    return(stats::smooth.spline(density, spar = n)$y)
-  }
-  else
-   stop("Wrong smoothing method")
 }
 
 core_detection <- function(radius, density, low_limit, up_limit, threshold)
