@@ -43,8 +43,7 @@ ring_detection_UI = function(radius, density)
       ),
       shiny::column(3,
         shiny::h4("Rings Detection"),
-        shiny::sliderInput("low_limit", "Lower limit",    min = 300, max = 1000, value = 600, step = 1),
-        shiny::sliderInput("up_limit", "Upper limit:",    min = 300, max = 1000, value = 800, step = 1),
+        shiny::sliderInput("limits", "Lower limit",    min = 300, max = 1000, value = c(600, 800), step = 1),
         shiny::sliderInput("threshold", "Threshold:",     min = 0,   max = 1000, value = 200, step = 1)
       ),
       shiny::column(3,
@@ -52,7 +51,7 @@ ring_detection_UI = function(radius, density)
         shiny::checkboxInput("smdensity", "Smoothed density", TRUE),
         shiny::checkboxInput("ringlimit", "Ring limits", TRUE),
         shiny::checkboxInput("earlywood", "Early wood limits", TRUE),
-        shiny::checkboxInput("limits", "Up and low limits", FALSE),
+        shiny::checkboxInput("disp_limits", "Up and low limits", FALSE),
         shiny::checkboxInput("derivative", "Density derivative", FALSE),
         shiny::sliderInput("zoom", label = "Zoom", min = start, max = end, value = c(start, end)),
         shiny::hr()
@@ -72,13 +71,13 @@ ring_detection_UI = function(radius, density)
       fwl = input$fw_linear
       fws = input$fw_spline
       fwo = input$fw_loess
-      ll  = input$low_limit
-      ul  = input$up_limit
+      ll  = input$limits[1]
+      ul  = input$limits[2]
       thd = input$threshold
       smd = input$smdensity
       rgl = input$ringlimit
       ew  = input$earlywood
-      lim = input$limits
+      lim = input$disp_limits
       der = input$derivative
       zoo = input$zoom
 
