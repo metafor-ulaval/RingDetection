@@ -5,8 +5,8 @@
 \alias{ring_detection_UI}
 \title{Algorithm for ring detection}
 \usage{
-ring_detection(radius, density, smooth_method, filter_with, low_limit, up_limit,
-  threshold)
+ring_detection(radius, density, smooth_method, filter_width, low_limit,
+  up_limit, threshold)
 
 ring_detection_UI(radius, density)
 }
@@ -17,7 +17,7 @@ ring_detection_UI(radius, density)
 
 \item{smooth_method}{character. Name of a method for smoothing. Can be 'linear' or 'spline'}
 
-\item{filter_with}{scalar. Smoothing parameter for the density profile}
+\item{filter_width}{scalar. Smoothing parameter for the density profile}
 
 \item{low_limit}{scalar.}
 

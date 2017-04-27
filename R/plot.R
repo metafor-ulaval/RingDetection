@@ -45,5 +45,6 @@ plotDensity <- function(data, smooth = TRUE, rings = TRUE, earlywood = TRUE, der
     graphics::plot(x, derivative(data$radius, data$smDensity), type = "l", col="blue", xaxt = "n", yaxt = "n", xlab = "", ylab = "", ...)
     graphics::axis(4)
     graphics::mtext("Wood density derivative", side = 4, line = 3, cex = par("cex.lab"))
+    graphics::abline(h = 0)
   }
 }

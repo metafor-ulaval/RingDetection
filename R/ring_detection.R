@@ -5,7 +5,7 @@
 #' @param radius numeric. Position from the pith
 #' @param density numeric. Density for each position
 #' @param smooth_method character. Name of a method for smoothing. Can be 'linear' or 'spline'
-#' @param filter_with scalar. Smoothing parameter for the density profile
+#' @param filter_width scalar. Smoothing parameter for the density profile
 #' @param low_limit scalar.
 #' @param up_limit scalar.
 #' @param threshold scalar.
@@ -21,16 +21,16 @@
 #' \dontrun{
 #' ring_detection_UI(oakprofile$rad_pos, oakprofile$density)
 #' }
-ring_detection <- function(radius, density, smooth_method, filter_with, low_limit, up_limit, threshold)
+ring_detection <- function(radius, density, smooth_method, filter_width, low_limit, up_limit, threshold)
 {
   if (missing(smooth_method)) smooth_method = 'linear'
-  if (missing(filter_with))   filter_with   = 5
+  if (missing(filter_width))  filter_width   = 5
   if (missing(low_limit))     low_limit     = 400
   if (missing(up_limit))      up_limit      = 800
   if (missing(threshold))     threshold     = 200
 
   scaled_density   = scaleDensity(density)
-  smoothed_density = smoothDensity(smooth_method, radius, scaled_density, filter_with)
+  smoothed_density = smoothDensity(smooth_method, radius, scaled_density, filter_width)
 
   ix = core_detection(radius, smoothed_density, low_limit, up_limit, threshold)
 
@@ -42,10 +42,10 @@ ring_detection <- function(radius, density, smooth_method, filter_with, low_limi
   data = data.frame(radius)
   data$density   = density
   data$year      = year
-  data$smDensity = smoothDensity(smooth_method, radius, density, n = filter_with)
+  data$smDensity = smoothDensity(smooth_method, radius, density, n = filter_width)
   data$woodtype  = identifyWoodtype(smoothed_density, year)
 
-  attr(data, "fw") = filter_with
+  attr(data, "fw") = filter_width
   attr(data, "ul") = up_limit
   attr(data, "ll") = low_limit
   attr(data, "th") = threshold
@@ -83,19 +83,22 @@ derivative = function(x,y)
   return(y.)
 }
 
-identifyWoodtype <- function(density, year)
+identifyWoodtype <- function(smoothed_density, year)
 {
-  wt <- rep( 'U', length(density))
+  wt <- rep( 'U', length(smoothed_density))
 
   for (i in unique(year))
   {
     ix <- which( year == i )
-    dd <- c(-9999.0, diff(density[ix]))
+    dd <- c(-9999.0, diff(smoothed_density[ix]))
 
     mx <- which(dd == max(dd, na.rm=TRUE))
 
-    wt[min(ix):ix[mx]] = 'E'
-    wt[ix[mx+1]:max(ix)] = 'L'
+    if(mx+1 < length(ix))
+    {
+      wt[min(ix):ix[mx]] = 'E'
+      wt[ix[mx+1]:max(ix)] = 'L'
+    }
   }
 
   return(wt)
