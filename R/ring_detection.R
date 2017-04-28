@@ -78,8 +78,8 @@ core_detection <- function(radius, density, low_limit, up_limit, threshold)
 
 derivative = function(x,y)
 {
-  y. = diff(y)/diff(x)
-  y. = c(y., NA)
+  y. = diff(y, lag = 2)/diff(x, lag = 2)
+  y. = c(NA, y., NA)
   return(y.)
 }
 
