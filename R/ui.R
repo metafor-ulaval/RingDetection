@@ -97,11 +97,31 @@ ring_detection_UI = function(radius, density)
     shiny::observe({
       if(input$quit > 0)
       {
-        fw = input$filter_with
-        ll = input$low_limit
-        ul = input$up_limit
-        th = input$threshold
-        data = ring_detection(radius, density, fw, ll, ul, th)
+        sth = input$smooth
+        fft = input$fw_fft
+        fwl = input$fw_linear
+        fws = input$fw_spline
+        fwo = input$fw_loess
+        ll  = input$limits[1]
+        ul  = input$limits[2]
+        thd = input$threshold
+        smd = input$smdensity
+        rgl = input$ringlimit
+        ew  = input$earlywood
+        lim = input$disp_limits
+        der = input$derivative
+        zoo = input$zoom
+
+        if(sth == "linear" | sth == "median" | sth == "savistsky")
+          fw = fwl
+        else if (sth == "spline")
+          fw = fws
+        else if (sth == "loess")
+          fw = fwo
+        else if (sth == "fft")
+          fw = fft
+
+        data = ring_detection(radius, density, sth, fw, ll, ul, thd)
         shiny::stopApp(data)
       }
     })
