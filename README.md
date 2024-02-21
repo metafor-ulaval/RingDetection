@@ -1,7 +1,7 @@
 Intall from Github:
 
 ```r
-devtools::install_github("Jean-Romain/RingsDetection", dependencies=TRUE)
+remotes::install_github("metafor-ulaval/RingsDetection")
 ```
 
 Usage:
